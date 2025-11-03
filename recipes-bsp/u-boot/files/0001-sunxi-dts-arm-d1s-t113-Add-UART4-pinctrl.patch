@@ -1,0 +1,42 @@
+From 7a60f70554b0e7abe64d85f18a5d301a3f6f98c1 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jonatan=20P=C3=A5lsson?= <jonatan@jptk.se>
+Date: Mon, 3 Nov 2025 13:15:56 +0100
+Subject: [PATCH] sunxi: dts: arm: d1s-t113: Add UART4 pinctrl
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Upstream-Status: Pending
+Signed-off-by: Jonatan Pålsson <jonatan@jptk.se>
+---
+ arch/arm/mach-sunxi/board.c           | 4 ++++
+ drivers/pinctrl/sunxi/pinctrl-sunxi.c | 1 +
+ 2 files changed, 5 insertions(+)
+
+diff --git a/arch/arm/mach-sunxi/board.c b/arch/arm/mach-sunxi/board.c
+index 701899ee4b2..1e7030a8ea6 100644
+--- a/arch/arm/mach-sunxi/board.c
++++ b/arch/arm/mach-sunxi/board.c
+@@ -170,6 +170,10 @@ static int gpio_init(void)
+ 	sunxi_gpio_set_cfgpin(SUNXI_GPB(6), 7);
+ 	sunxi_gpio_set_cfgpin(SUNXI_GPB(7), 7);
+ 	sunxi_gpio_set_pull(SUNXI_GPB(7), SUNXI_GPIO_PULL_UP);
++#elif CONFIG_CONS_INDEX == 5 && defined(CONFIG_MACH_SUN8I_R528)
++	sunxi_gpio_set_cfgpin(SUNXI_GPB(2), 7);
++	sunxi_gpio_set_cfgpin(SUNXI_GPB(3), 7);
++	sunxi_gpio_set_pull(SUNXI_GPB(3), SUNXI_GPIO_PULL_UP);
+ #elif CONFIG_CONS_INDEX == 5 && defined(CONFIG_MACH_SUN8I)
+ 	sunxi_gpio_set_cfgpin(SUNXI_GPL(2), SUN8I_GPL_R_UART);
+ 	sunxi_gpio_set_cfgpin(SUNXI_GPL(3), SUN8I_GPL_R_UART);
+diff --git a/drivers/pinctrl/sunxi/pinctrl-sunxi.c b/drivers/pinctrl/sunxi/pinctrl-sunxi.c
+index 37ea93715d1..c30cefce141 100644
+--- a/drivers/pinctrl/sunxi/pinctrl-sunxi.c
++++ b/drivers/pinctrl/sunxi/pinctrl-sunxi.c
+@@ -615,6 +615,7 @@ static const struct sunxi_pinctrl_function sun20i_d1_pinctrl_functions[] = {
+ 	{ "uart1",	2 },	/* PG6-PG7 */
+ 	{ "uart2",	7 },	/* PB0-PB1 */
+ 	{ "uart3",	7 },	/* PB6-PB7 */
++	{ "uart4",	7 },	/* PB2-PB3 */
+ };
+ 
+ static const struct sunxi_pinctrl_desc __maybe_unused sun20i_d1_pinctrl_desc = {
