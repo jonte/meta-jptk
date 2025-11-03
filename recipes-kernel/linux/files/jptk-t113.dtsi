@@ -85,8 +85,8 @@
 	pinctrl-0 = <&mmc0_pins>;
 	pinctrl-names = "default";
 	vmmc-supply = <&reg_3v3>;
-	cd-gpios = <&pio 5 6 GPIO_ACTIVE_LOW>;
 	disable-wp;
+	broken-cd;
 	bus-width = <4>;
 	status = "okay";
 };
