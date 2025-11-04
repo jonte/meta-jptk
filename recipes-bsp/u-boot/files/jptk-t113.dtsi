@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 // Copyright (C) 2022 Arm Ltd.
 /*
- * Common peripherals and configurations for MangoPi MQ-R boards.
+ * Common peripherals and configurations for JPTK T113 boards.
  */
 
 #include <dt-bindings/gpio/gpio.h>
@@ -16,16 +16,6 @@
 		stdout-path = "serial4:115200n8";
 	};
 
-	leds {
-		compatible = "gpio-leds";
-
-		led-0 {
-			color = <LED_COLOR_ID_BLUE>;
-			function = LED_FUNCTION_STATUS;
-			gpios = <&pio 3 22 GPIO_ACTIVE_LOW>; /* PD22 */
-		};
-	};
-
 	/* board wide 5V supply directly from the USB-C socket */
 	reg_vcc5v: regulator-5v {
 		compatible = "regulator-fixed";
@@ -35,7 +25,7 @@
 		regulator-always-on;
 	};
 
-	/* SY8008 DC/DC regulator on the board */
+	/* RY1303 3v3 rail */
 	reg_3v3: regulator-3v3 {
 		compatible = "regulator-fixed";
 		regulator-name = "vcc-3v3";
@@ -44,27 +34,31 @@
 		vin-supply = <&reg_vcc5v>;
 	};
 
-	/* SY8008 DC/DC regulator on the board, also supplying VDD-SYS */
-	reg_vcc_core: regulator-core {
+	/* RY1303 1v5 rail */
+	reg_dram: regulator-dram {
 		compatible = "regulator-fixed";
-		regulator-name = "vcc-core";
-		regulator-min-microvolt = <880000>;
-		regulator-max-microvolt = <880000>;
+		regulator-name = "vcc-dram";
+		regulator-min-microvolt = <1500000>;
+		regulator-max-microvolt = <1500000>;
 		vin-supply = <&reg_vcc5v>;
 	};
 
-	/* XC6206 LDO on the board */
-	reg_avdd2v8: regulator-avdd {
+	/* RY1303 0v9 rail */
+	reg_vcc_core: regulator-core {
 		compatible = "regulator-fixed";
-		regulator-name = "avdd2v8";
-		regulator-min-microvolt = <2800000>;
-		regulator-max-microvolt = <2800000>;
-		vin-supply = <&reg_3v3>;
+		regulator-name = "vcc-core";
+		regulator-min-microvolt = <900000>;
+		regulator-max-microvolt = <900000>;
+		vin-supply = <&reg_vcc5v>;
 	};
 
-	wifi_pwrseq: wifi-pwrseq {
-		compatible = "mmc-pwrseq-simple";
-		reset-gpios = <&pio 6 12 GPIO_ACTIVE_LOW>; /* PG12 */
+	/* TPS6220 1v8 rail */
+	reg_1v8: regulator-core {
+		compatible = "regulator-fixed";
+		regulator-name = "vcc-1v8";
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <1800000>;
+		vin-supply = <&reg_vcc5v>;
 	};
 };
 
@@ -80,20 +74,9 @@
 	pinctrl-0 = <&mmc0_pins>;
 	pinctrl-names = "default";
 	vmmc-supply = <&reg_3v3>;
-	cd-gpios = <&pio 5 6 GPIO_ACTIVE_LOW>;
 	disable-wp;
 	broken-cd;
 	bus-width = <4>;
-	status = "okay";
-};
-
-&mmc1 {
-	pinctrl-0 = <&mmc1_pins>;
-	pinctrl-names = "default";
-	vmmc-supply = <&reg_3v3>;
-	non-removable;
-	bus-width = <4>;
-	mmc-pwrseq = <&wifi_pwrseq>;
 	status = "okay";
 };
 
@@ -104,7 +87,6 @@
 &pio {
 	vcc-pb-supply = <&reg_3v3>;
 	vcc-pd-supply = <&reg_3v3>;
-	vcc-pe-supply = <&reg_avdd2v8>;
 	vcc-pf-supply = <&reg_3v3>;
 	vcc-pg-supply = <&reg_3v3>;
 	
@@ -121,7 +103,6 @@
 	status = "okay";
 };
 
-/* The USB-C socket has its CC pins pulled to GND, so is hardwired as a UFP. */
 &usb_otg {
 	dr_mode = "peripheral";
 	status = "okay";
@@ -130,4 +111,42 @@
 &usbphy {
 	usb1_vbus-supply = <&reg_vcc5v>;
 	status = "okay";
+};
+
+&spi0 {
+    pinctrl-names = "default";
+    pinctrl-0 = <&spi0_pins>;
+    status = "okay";
+
+    nand@0 {
+        compatible = "spi-nand";
+
+        reg = <0>;
+        spi-max-frequency = <50000000>;
+
+        spi-rx-bus-width = <1>;
+        spi-tx-bus-width = <1>;
+
+        partitions {
+            compatible = "fixed-partitions";
+            #address-cells = <1>;
+            #size-cells = <1>;
+
+            bootloader@0 {
+                label = "bootloader";
+                reg = <0x00000000 0x00200000>; /* 2 MiB */
+                read-only;
+            };
+
+            env@200000 {
+                label = "uboot-env";
+                reg = <0x00200000 0x00080000>; /* 512 KiB */
+            };
+
+            rootfs@280000 {
+                label = "rootfs";
+                reg = <0x00280000 0x07d80000>; /* rest of device */
+            };
+        };
+    };
 };

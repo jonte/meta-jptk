@@ -11,10 +11,6 @@
 / {
 	model = "JPTK-T113";
 	compatible = "jptk,t113", "allwinner,sun8i-t113s";
-
-	aliases {
-		ethernet0 = &rtl8189ftv;
-	};
 };
 
 &cpu0 {
@@ -23,13 +19,4 @@
 
 &cpu1 {
 	cpu-supply = <&reg_vcc_core>;
-};
-
-&mmc1 {
-	rtl8189ftv: wifi@1 {
-		reg = <1>;
-		interrupt-parent = <&pio>;
-		interrupts = <6 10 IRQ_TYPE_LEVEL_LOW>; /* PG10 = WL_WAKE_AP */
-		interrupt-names = "host-wake";
-	};
 };
