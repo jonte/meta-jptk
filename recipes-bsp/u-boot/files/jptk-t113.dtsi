@@ -163,6 +163,8 @@
 	status = "okay";
 	phy-mode = "rmii";
 	phy-handle = <&ksz8081>;
+
+	local-mac-address = [ 02 12 34 56 78 9a ];
 };
 
 &mdio {
