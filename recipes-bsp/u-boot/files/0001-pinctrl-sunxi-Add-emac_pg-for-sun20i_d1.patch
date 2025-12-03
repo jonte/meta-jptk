@@ -1,0 +1,24 @@
+From d7b1a6faed34279b0a0e0516b7eb0500d8194ac6 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jonatan=20P=C3=A5lsson?= <jonatan@jptk.se>
+Date: Wed, 3 Dec 2025 11:40:38 +0100
+Subject: [PATCH] pinctrl-sunxi: Add emac_pg for sun20i_d1
+
+---
+ drivers/pinctrl/sunxi/pinctrl-sunxi.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/pinctrl/sunxi/pinctrl-sunxi.c b/drivers/pinctrl/sunxi/pinctrl-sunxi.c
+index c30cefce141..cec147b5fa3 100644
+--- a/drivers/pinctrl/sunxi/pinctrl-sunxi.c
++++ b/drivers/pinctrl/sunxi/pinctrl-sunxi.c
+@@ -599,6 +599,7 @@ static const struct sunxi_pinctrl_desc __maybe_unused sun9i_a80_r_pinctrl_desc =
+ };
+ 
+ static const struct sunxi_pinctrl_function sun20i_d1_pinctrl_functions[] = {
++	{ "emac_pg",	4 },	/* PG0-PG15 */
+ 	{ "emac",	8 },	/* PE0-PE15 */
+ 	{ "gpio_in",	0 },
+ 	{ "gpio_out",	1 },
+-- 
+2.47.2
+

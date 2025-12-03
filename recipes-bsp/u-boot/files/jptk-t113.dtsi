@@ -95,6 +95,12 @@
 		pins = "PB2", "PB3";
 		function = "uart4";
 	};
+
+	rmii_pg_pins: rmii-pg-pins {
+		pins = "PG0", "PG1", "PG2", "PG3", "PG4",
+		       "PG5", "PG12", "PG13", "PG14", "PG15";
+		function = "emac_pg";
+	};
 };
 
 &uart4 {
@@ -149,4 +155,18 @@
             };
         };
     };
+};
+
+&emac {
+	pinctrl-names = "default";
+	pinctrl-0 = <&rmii_pg_pins>;
+	status = "okay";
+	phy-mode = "rmii";
+	phy-handle = <&ksz8081>;
+};
+
+&mdio {
+	ksz8081: ethernet-phy@0 {
+		reg = <0>; // Connected to PG0. KSZ8081 has internal pull-down, so this is 0.
+	};
 };
