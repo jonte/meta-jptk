@@ -2,6 +2,7 @@ From d7b1a6faed34279b0a0e0516b7eb0500d8194ac6 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Jonatan=20P=C3=A5lsson?= <jonatan@jptk.se>
 Date: Wed, 3 Dec 2025 11:40:38 +0100
 Subject: [PATCH] pinctrl-sunxi: Add emac_pg for sun20i_d1
+Upstream-Status: Pending
 
 ---
  drivers/pinctrl/sunxi/pinctrl-sunxi.c | 1 +

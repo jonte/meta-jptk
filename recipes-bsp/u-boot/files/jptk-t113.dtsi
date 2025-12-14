@@ -9,11 +9,12 @@
 
 / {
 	aliases {
+		serial0 = &uart0;
 		serial4 = &uart4;
 	};
 
 	chosen {
-		stdout-path = "serial4:115200n8";
+		stdout-path = "serial0:115200n8";
 	};
 
 	/* board wide 5V supply directly from the USB-C socket */
@@ -75,7 +76,6 @@
 	pinctrl-names = "default";
 	vmmc-supply = <&reg_3v3>;
 	disable-wp;
-	broken-cd;
 	bus-width = <4>;
 	status = "okay";
 };
@@ -125,10 +125,10 @@
     status = "okay";
 
     nand@0 {
-        compatible = "spi-nand";
+	compatible = "winbond,w25n01gv", "spi-nand";
 
         reg = <0>;
-        spi-max-frequency = <50000000>;
+        spi-max-frequency = <500000>;
 
         spi-rx-bus-width = <1>;
         spi-tx-bus-width = <1>;

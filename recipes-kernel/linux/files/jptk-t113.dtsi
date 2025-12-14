@@ -10,10 +10,11 @@
 / {
 	aliases {
 		serial4 = &uart4;
+		serial0 = &uart0;
 	};
 
 	chosen {
-		stdout-path = "serial4:115200n8";
+		stdout-path = "serial0:115200n8";
 	};
 
 	leds {
@@ -71,6 +72,22 @@
 
 
 &pio {
+	rmii_pg_pins: rmii-pg-pins {
+		pins = "PG0", "PG1", "PG2", "PG3", "PG4",
+			"PG5", "PG12", "PG13", "PG14", "PG15";
+			function = "emac";
+	};
+	uart0_pe_pins: uart0-pe-pins {
+		pins = "PE3", "PE2";
+		function = "uart0";
+	};
+
+};
+
+&uart0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart0_pe_pins>;
+	status = "okay";
 };
 
 &dcxo {
@@ -125,7 +142,6 @@
 	status = "okay";
 };
 
-/* The USB-C socket has its CC pins pulled to GND, so is hardwired as a UFP. */
 &usb_otg {
 	dr_mode = "peripheral";
 	status = "okay";
@@ -134,4 +150,58 @@
 &usbphy {
 	usb1_vbus-supply = <&reg_vcc5v>;
 	status = "okay";
+};
+
+&spi0 {
+    pinctrl-names = "default";
+    pinctrl-0 = <&spi0_pins>;
+    status = "okay";
+
+    nand@0 {
+	compatible = "winbond,w25n01gv", "spi-nand";
+
+        reg = <0>;
+        spi-max-frequency = <500000>;
+
+        spi-rx-bus-width = <1>;
+        spi-tx-bus-width = <1>;
+
+        partitions {
+            compatible = "fixed-partitions";
+            #address-cells = <1>;
+            #size-cells = <1>;
+
+            bootloader@0 {
+                label = "bootloader";
+                reg = <0x00000000 0x00200000>; /* 2 MiB */
+                read-only;
+            };
+
+            env@200000 {
+                label = "uboot-env";
+                reg = <0x00200000 0x00080000>; /* 512 KiB */
+            };
+
+            rootfs@280000 {
+                label = "rootfs";
+                reg = <0x00280000 0x07d80000>; /* rest of device */
+            };
+        };
+    };
+};
+
+&emac {
+	pinctrl-names = "default";
+	pinctrl-0 = <&rmii_pg_pins>;
+	status = "okay";
+	phy-mode = "rmii";
+	phy-handle = <&ksz8081>;
+
+	local-mac-address = [ 02 12 34 56 78 9a ];
+};
+
+&mdio {
+	ksz8081: ethernet-phy@0 {
+		reg = <0>; // Connected to PG0. KSZ8081 has internal pull-down, so this is 0.
+	};
 };
